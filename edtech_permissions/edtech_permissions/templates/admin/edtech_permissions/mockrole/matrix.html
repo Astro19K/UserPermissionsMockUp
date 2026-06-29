@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='edtech_permissions' %}">EdTech Permissions Mockup</a>
+&rsaquo; <a href="{% url 'admin:edtech_permissions_mockrole_changelist' %}">Mock Roles</a>
+&rsaquo; User Permission Matrix
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .matrix-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    .matrix-table th, .matrix-table td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    .matrix-table th { background: #f8f8f8; color: #333; }
+    .matrix-table th.role-name { text-align: left; }
+    .submit-row { margin-top: 20px; text-align: left; }
+</style>
+
+<div id="content-main">
+    <form method="post">
+        {% csrf_token %}
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th class="role-name">Role</th>
+                    <th>Type</th>
+                    <th>Assigned Via</th>
+                    {% for perm in permissions %}
+                        <th>{{ perm.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr>
+                    <th class="role-name">{{ role.name }}</th>
+                    <td>{{ role.role_type }}</td>
+                    <td><small>{{ role.assigned_via }}</small></td>
+                    {% for perm in permissions %}
+                        <td>
+                            <input type="checkbox" name="role_{{ role.id }}" value="{{ perm.id }}"
+                                {% if perm in role.permissions.all %}checked{% endif %}>
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="submit-row">
+            <input type="submit" value="Save Matrix" class="default" name="_save">
+            <a href="{% url 'admin:edtech_permissions_mockrole_changelist' %}" class="button cancel-link">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
