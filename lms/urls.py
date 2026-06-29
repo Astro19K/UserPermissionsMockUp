@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.contrib.admin import autodiscover as django_autodiscover
 from django.urls import include, path, re_path
 from django.utils.translation import gettext_lazy as _
-from django.views.generic.base import RedirectView
+from django.views.generic.base import RedirectView, TemplateView
 from edx_api_doc_tools import make_docs_urls
 from edx_django_utils.plugins import get_plugin_url_patterns
 from submissions import urls as submissions_urls
@@ -107,6 +107,7 @@ urlpatterns = [
 
     # Static template view endpoints like blog, faq, etc.
     path('', include('lms.djangoapps.static_template_view.urls')),
+    path('user-permissions-mockup/', TemplateView.as_view(template_name='user_permissions_mockup.html'), name='user_permissions_mockup'),
 
     path('heartbeat', include('openedx.core.djangoapps.heartbeat.urls')),
 
