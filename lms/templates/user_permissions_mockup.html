@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Permission Settings - Open edX</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        h1 span {
+            font-weight: normal;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .legend-icon {
+            font-weight: bold;
+        }
+        .icon-full { color: #28a745; }
+        .icon-limited { color: #b8860b; font-size: 16px; }
+        .icon-none { color: #999; }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 13px;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        th.text-left, td.text-left {
+            text-align: left;
+        }
+        
+        /* Section Headers */
+        .section-platform {
+            background-color: #4b3b9b;
+            color: white;
+            font-weight: bold;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .section-course {
+            background-color: #0b6642;
+            color: white;
+            font-weight: bold;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        
+        /* First columns styling */
+        td:first-child {
+            font-weight: bold;
+        }
+        td:nth-child(2) {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>User Permission Settings &mdash; <span>Open edX</span></h1>
+    <div class="subtitle">
+        Role &times; capability matrix. 
+        <span class="legend-icon icon-full">&#10003;</span> full &nbsp; 
+        <span class="legend-icon icon-limited">&#9681;</span> limited &nbsp; 
+        <span class="legend-icon icon-none">-</span> none
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="text-left">Role</th>
+                <th class="text-left">Assigned via</th>
+                <th>Enroll / take courses</th>
+                <th>Create courses</th>
+                <th>Pre-publish access</th>
+                <th>View content &amp; progress</th>
+                <th>Edit course content</th>
+                <th>Grades &amp; certificates</th>
+                <th>Enrollment &amp; staff</th>
+                <th>Moderate forums</th>
+                <th>Full forum admin</th>
+                <th>Django admin / support</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- PLATFORM ROLES -->
+            <tr>
+                <td colspan="12" class="section-platform">PLATFORM ROLES &mdash; Django admin (/admin/)</td>
+            </tr>
+            <tr>
+                <td class="text-left">Learner</td>
+                <td class="text-left">auto on register</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Course Creator</td>
+                <td class="text-left">Django admin</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Global Staff</td>
+                <td class="text-left">Django admin</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-limited">&#9681;</td>
+                <td class="icon-limited">&#9681;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+            </tr>
+            <tr>
+                <td class="text-left">Superuser</td>
+                <td class="text-left">Django admin</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+            </tr>
+
+            <!-- COURSE ROLES -->
+            <tr>
+                <td colspan="12" class="section-course">COURSE ROLES &mdash; Studio Membership tab / LMS Instructor dashboard</td>
+            </tr>
+            <tr>
+                <td class="text-left">Beta Tester</td>
+                <td class="text-left">Studio / LMS</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Course Staff</td>
+                <td class="text-left">Studio / LMS</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Instructor</td>
+                <td class="text-left">Studio / LMS</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Discussion Moderator</td>
+                <td class="text-left">LMS dashboard</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Discussion Admin</td>
+                <td class="text-left">LMS dashboard</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Community TA</td>
+                <td class="text-left">LMS dashboard</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-limited">&#9681;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+            <tr>
+                <td class="text-left">Group Moderator</td>
+                <td class="text-left">LMS dashboard</td>
+                <td class="icon-full">&#10003;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+                <td class="icon-limited">&#9681;</td>
+                <td class="icon-none">.</td>
+                <td class="icon-none">.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
