@@ -46,13 +46,24 @@ tutor dev start lms cms mfe -d
 ```
 
 ## 🌍 The Important Guide Links
-1. **The Admin Site (Django Admin):** `http://local.openedx.io:8000/admin`
-   * **Role Definitions (The Matrix):** `http://local.openedx.io:8000/admin/edtech_permissions/mockrole/` (Use this to create or edit roles like "Instructor" or "Course Creator")
-   * **User Assignments:** `http://local.openedx.io:8000/admin/edtech_permissions/userroleassignment/` (Use this to assign the roles to specific users)
-2. **The Learner Site (LMS):** `http://local.openedx.io:8000`
+
+> [!NOTE]
+> **Host Mapping Required:** You must map these domains to `127.0.0.1` in your Windows hosts file. To do this automatically, open PowerShell as an **Administrator** and run this single command:
+> ```powershell
+> Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "`n127.0.0.1 www.myopenedx.com studio.www.myopenedx.com apps.www.myopenedx.com preview.www.myopenedx.com"
+> ```
+
+1. **The Admin Site (Django Admin):** `http://www.myopenedx.com:8000/admin`
+   * **Role Definitions (The Matrix):** `http://www.myopenedx.com:8000/admin/edtech_permissions/mockrole/` (Use this to create or edit roles like "Instructor" or "Course Creator")
+   * **User Assignments:** `http://www.myopenedx.com:8000/admin/edtech_permissions/userroleassignment/` (Use this to assign the roles to specific users)
+2. **The Learner Site (LMS):** `http://www.myopenedx.com:8000`
    * *Where students go to take courses.*
-3. **The Course Creator Site (Studio):** `http://studio.local.openedx.io:8001`
+3. **The Course Creator Site (Studio):** `http://studio.www.myopenedx.com:8001`
    * *Where instructors and creators go to build courses.*
+4. **Learner Account (MFE):** `http://apps.www.myopenedx.com:1997`
+   * *The modern Micro-Frontend account settings page.*
+5. **Learner Profile (MFE):** `http://apps.www.myopenedx.com:1995`
+   * *The modern Micro-Frontend public profile page.*
 
 ## 🔑 Test Credentials
 * **Admin Account:** `admin@example.com` | Password: `admin`
@@ -67,12 +78,12 @@ tutor dev start lms cms mfe -d
 The synchronization engine automatically applies native Open edX permissions when you assign a role to a user.
 
 ### Testing a Platform Role (e.g., Course Creator)
-1. Go to your local Django Admin panel (`http://local.openedx.io:8000/admin`).
-2. Log in with your admin credentials (e.g., `admin@example.com` / `admin`).
+1. Go to your local Django Admin panel (`http://www.myopenedx.com:8000/admin`).
+2. Log in with your admin credentials (e.g., `admin` / `admin`).
 3. Scroll to the **EdTech Permissions Mockup** section and click **User role assignments**.
 4. Click **Add user role assignment**.
 5. Select `fake_student_1`, select the **Course Creator** role, and click **Save**.
-6. **Verify:** Go to Open edX Studio (`http://studio.local.openedx.io:8001`) and log in as `student1@example.com` (`edx`). You will now see the `+ New Course` button because the Sync Engine automatically added them to the native `course_creator` group.
+6. **Verify:** Go to Open edX Studio (`http://studio.www.myopenedx.com:8001`) and log in as `student1@example.com` (`edx`). You will now see the `+ New Course` button because the Sync Engine automatically added them to the native `course_creator` group.
 
 ### Testing a Course Role (e.g., Instructor)
 Course roles apply only to a specific course.
@@ -95,16 +106,16 @@ Course roles apply only to a specific course.
 If you try to log into Studio and receive an `Error: invalid_request - Mismatching redirect URI` screen, it means the Single Sign-On (SSO) configuration in your local database does not match the URL you are using in your browser.
 
 **How to fix:**
-1. Go to your local Django Admin panel (`http://local.openedx.io:8000/admin`).
+1. Go to your local Django Admin panel (`http://www.myopenedx.com:8000/admin`).
 2. Scroll down to **Django OAuth Toolkit** and click on **Applications**.
 3. Click on the application with the Client ID **`cms-sso-dev`**.
-4. In the **Redirect uris** text box, add your exact `local.openedx.io` URL on a new line below the existing ones:
+4. In the **Redirect uris** text box, add your exact `studio.www.myopenedx.com` URL on a new line below the existing ones:
    ```text
    http://localhost:8001/complete/edx-oidc/
-   http://local.openedx.io:8001/complete/edx-oidc/
+   http://studio.www.myopenedx.com:8001/complete/edx-oidc/
    ```
 5. Click **Save**. 
-6. Go back to Studio (`http://local.openedx.io:8001`) and try logging in again. The SSO will now succeed!
+6. Go back to Studio (`http://studio.www.myopenedx.com:8001`) and try logging in again. The SSO will now succeed!
 
 ### "localhost refused to connect" or redirect to localhost:2001
 If you log into Studio or the LMS and suddenly see an error page saying `localhost refused to connect`, with an address bar showing `localhost:2001` or `localhost:1995`, this is because Open edX relies on Micro-Frontend (MFE) apps for the modern dashboard.

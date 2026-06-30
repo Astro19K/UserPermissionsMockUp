@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'Django>=3.2',
+        'Django>=2.2',
     ],
     entry_points={
         "lms.djangoapp": [
