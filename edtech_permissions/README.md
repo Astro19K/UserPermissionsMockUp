@@ -31,15 +31,12 @@ docker exec -it tutor_dev-lms-1 bash -c "source /openedx/venv/bin/activate && pi
 tutor dev restart lms
 ```
 
-### 3. Populate the Database
-We have included automated scripts to generate test users and populate the Matrix with default roles and permissions so you don't have to type them all out.
+### 3. Populate the Database (17 Permissions Matrix)
+We have included an automated script that fully populates the Django database to match the 17-column custom Permissions Matrix.
 
 ```bash
-# 1. Generate the test users (fake_student_1, fake_student_2, fake_instructor)
+# Generate 17 Permissions, 12 Roles, and 12 Fake Test Accounts instantly!
 docker exec -it tutor_dev-lms-1 bash -c "source /openedx/venv/bin/activate && python /openedx/edtech_permissions/setup_test_users.py"
-
-# 2. Populate the Permission Matrix
-docker exec -it tutor_dev-lms-1 bash -c "source /openedx/venv/bin/activate && python /openedx/edtech_permissions/update_mock_data.py"
 ```
 
 ### 4. Install and Start the Course Authoring MFE
@@ -121,46 +118,68 @@ Because the modern Learner Portal uses a React Micro-Frontend (MFE), we cannot e
    * *The modern Micro-Frontend public profile page.*
 
 ## 🔑 Test Credentials
+All fake accounts use the standard password: `edx`
+
 * **Admin Account:** `admin@example.com` | Password: `admin`
-* **Student 1:** `student1@example.com` | Password: `edx`
-* **Student 2:** `student2@example.com` | Password: `edx`
-* **Instructor:** `instructor@example.com` | Password: `edx`
+* **Learner:** `fake_learner@example.com` 
+* **Course Creator:** `fake_course_creator@example.com`
+* **Global Staff:** `fake_global_staff@example.com`
+* **Superuser:** `fake_superuser@example.com`
+* **Report Manager:** `fake_report_manager@example.com`
+* **Beta Tester:** `fake_beta_tester@example.com`
+* **Course Staff:** `fake_course_staff@example.com`
+* **Instructor:** `fake_instructor@example.com`
+* **Discussion Moderator:** `fake_discussion_moderator@example.com`
+* **Discussion Admin:** `fake_discussion_admin@example.com`
+* **Community TA:** `fake_community_ta@example.com`
+* **Group Moderator:** `fake_group_moderator@example.com`
 
 ---
 
-## 🧪 How to Test Each Role (Step-by-Step)
+## 🧪 How to Test Each Role & Open edX Native Constraints
 
-The synchronization engine automatically applies native Open edX permissions when you assign a role to a user.
+Open edX natively only supports about 7 distinct course roles. Because your Custom Matrix has **17 highly granular permissions**, our synchronization engine groups some of them together. Here is a breakdown of what you can test for each Fake Account, and the specific Open edX platform constraints you should be aware of.
 
-### Testing a Platform Role (e.g., Course Creator)
-1. Go to your local Django Admin panel (`http://local.openedx.io:8000/admin`).
-2. Log in with your admin credentials (e.g., `admin` / `admin`).
-3. Scroll to the **EdTech Permissions Mockup** section and click **User role assignments**.
-4. Click **Add user role assignment**.
-5. Select `fake_student_1`, select the **Course Creator** role, and click **Save**.
-6. **Verify:** Go to Open edX Studio (`http://studio.local.openedx.io:8001`) and log in as `student1@example.com` (`edx`). You will now see the `+ New Course` button because the Sync Engine automatically added them to the native `course_creator` group.
+### 1. The Learner (`fake_learner`)
+* **Open edX Native Constraints:** None. This is a standard student.
+* **How to Test:** Log into the LMS (`http://local.openedx.io:8000`) and click into the Demo Course. Verify they can watch videos and answer questions, but have no access to Studio or the Instructor Dashboard.
 
-### Testing a Course Role (e.g., Instructor)
-Course roles apply only to a specific course.
-1. In Django Admin, go to **User role assignments** -> **Add**.
-2. Select `fake_instructor`, select the **Instructor** role.
-3. In the **Course ID** field, paste a valid course ID (e.g., `course-v1:OpenedX+DemoX+DemoCourse`). Click **Save**.
-4. **Verify:** Log into Studio as `instructor@example.com` (`edx`). You will instantly have access to edit that specific course.
+### 2. The Course Creator (`fake_course_creator`)
+* **Open edX Native Constraints:** None.
+* **How to Test:** Log into Studio (`http://studio.local.openedx.io:8001`). Verify you can see the **"+ New Course"** button on the dashboard to build courses from scratch.
 
-### Testing Dynamic Revocation
-1. Log into Django Admin and go to **Mock roles**.
-2. Click on **Course Creator**.
+### 3. Global Staff & Superuser (`fake_global_staff`, `fake_superuser`)
+* **Open edX Native Constraints:** None. 
+* **How to Test:** Go to `http://local.openedx.io:8000/admin`. Verify you can log in and view the backend database tables.
+
+### 4. Course Staff & Instructor (`fake_course_staff`, `fake_instructor`)
+* **Open edX Native Constraints:** Open edX treats Staff and Instructors very similarly. Both get full Studio Authoring rights.
+* **How to Test:** Log into Studio and open the Demo Course. Verify you can add HTML components, upload videos, and change grading policies. In the LMS, verify you can access the "Instructor Dashboard".
+
+### 5. Beta Tester (`fake_beta_tester`)
+* **Open edX Native Constraints:** None.
+* **How to Test:** In Studio, set the Start Date of a course to next month. Log into the LMS as the Beta Tester. Verify they bypass the start date lock and can view/test the course early!
+
+### 6. The Forum Team (`fake_discussion_moderator`, `fake_discussion_admin`, `fake_community_ta`)
+* **Open edX Native Constraints:** Open edX only has two main forum roles: `forum_admin` and `community_ta`. The granular difference between "Full Forum Admin" and "Moderate Forums" in your spreadsheet is flattened into `forum_admin`.
+* **How to Test:** Log into the LMS and go to the **Discussion** tab in the course. Verify these users have special Admin buttons to **Pin, Endorse, or Delete** student posts. 
+* **Crucial Security Test:** Try to log into Studio with these accounts. Verify they are **completely blocked** from editing course content (which prevents them from deleting the anti-copying script!).
+
+### 7. Report Manager (`fake_report_manager`)
+* **Open edX Native Constraints:** Your spreadsheet separates "Generate Reports", "View Published Reports", and "View Draft Reports". Open edX cannot differentiate these; they are all grouped into the native `data_researcher` role.
+* **How to Test:** Log into the LMS and click the **Instructor Dashboard**. Click on the **Data Download** tab. Verify they can download CSV reports of student grades, but verify they are **blocked** from accessing Studio to edit the course.
+
+### 8. Facilities Management
+* **Open edX Native Constraints:** Open edX does not have a "Facilities" feature built-in. 
+* **How to Test:** The "Can Manage Facilities" checkbox in the Matrix is currently a visual placeholder only. It cannot be tested functionally.
+
+---
+
+### Testing Dynamic Revocation (The "Kill Switch")
+1. Log into Django Admin (`http://local.openedx.io:8000/admin`) as `admin`.
+2. Go to **Mock roles** and click on **Course Creator**.
 3. Uncheck the "Create courses" permission and save.
-4. **Verify:** If you refresh Studio as `student1`, the `+ New Course` button will be gone. The Sync Engine automatically revoked their Open edX privileges because the Matrix definition changed.
-
-### Testing Premium Features (Timed Exams)
-Because your test users were automatically enrolled in the **Verified** track (in Step 5), they are eligible for premium exams!
-1. Log into Studio (`http://studio.local.openedx.io:8001`) as `instructor@example.com`.
-2. Go to **Content -> Outline** and click the Configure (gear) icon on any Subsection.
-3. Go to the **Advanced** tab, set it to **Timed**, type `00:05`, and click Save.
-4. **Publish** the subsection (click the cloud icon).
-5. Log into the LMS (`http://local.openedx.io:8000`) as `student1@example.com` and navigate to that section. You will be hit by a giant Timed Exam blocking screen!
-6. **Verify Audit Bypassing:** To prove that free students don't get exams, go to your Django Admin (`http://local.openedx.io:8000/admin`), scroll to **EDTECH PERMISSIONS MOCKUP -> Course enrollments**. Click on `student1`'s record, change their **Mode** from `verified` to `audit`, and click Save. If you refresh the LMS, the timer is magically gone!
+4. **Verify:** Refresh Studio as `fake_course_creator`. The `+ New Course` button will instantly vanish. The Sync Engine automatically revoked their Open edX privileges because the Matrix definition changed!
 
 ---
 

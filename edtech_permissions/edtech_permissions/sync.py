@@ -29,8 +29,11 @@ def sync_user_permissions(user):
         perm_names = [p.name for p in role.permissions.all()]
         
         # Platform level permissions
-        if "Access Django admin / support" in perm_names or "Create courses" in perm_names:
+        if any(p in perm_names for p in ["Access Django admin / support", "Create courses", "Superuser"]):
             is_staff = True
+        
+        if "Superuser" in perm_names:
+            is_superuser = True
         
         if "Create courses" in perm_names:
             add_to_course_creator = True
@@ -40,21 +43,39 @@ def sync_user_permissions(user):
             if course_id not in course_roles_to_grant:
                 course_roles_to_grant[course_id] = set()
             
-            if "Edit course content" in perm_names:
+            # Authoring
+            if "Edit Course Content" in perm_names:
                 course_roles_to_grant[course_id].add("instructor")
-            if "Full pre-publish access" in perm_names:
+            
+            # Staff tasks (Grades, Progress, Enrollment)
+            if any(p in perm_names for p in ["Manage Grades & Certificates", "Perform Enrollment & Staff Tasks", "View Content & Progress", "Limited Ability to View Content & Progress"]):
+                course_roles_to_grant[course_id].add("staff")
+                
+            # Beta Testing
+            if "Full Pre-Publish Access" in perm_names or "Limited Pre-Publish Access" in perm_names:
                 course_roles_to_grant[course_id].add("beta_testers")
-            if "Moderate forums" in perm_names:
+                
+            # Forum Moderation
+            if "Moderate Forums" in perm_names or "Full Forum Admin" in perm_names:
                 course_roles_to_grant[course_id].add("forum_admin")
+            if "Limited Ability to Moderate Forums" in perm_names:
+                course_roles_to_grant[course_id].add("community_ta")
+                
+            # Reports / Analytics
+            if "Can Generate Reports" in perm_names or "Can View Published Reports" in perm_names or "Can View Draft Reports" in perm_names:
+                course_roles_to_grant[course_id].add("data_researcher")
     
     # 2. Apply Platform Permissions
     user_updated = False
     if user.is_staff != is_staff:
         user.is_staff = is_staff
         user_updated = True
+    if user.is_superuser != is_superuser:
+        user.is_superuser = is_superuser
+        user_updated = True
     
     if user_updated:
-        user.save(update_fields=['is_staff'])
+        user.save(update_fields=['is_staff', 'is_superuser'])
 
     # 3. Apply Course Creator Group
     course_creator_group, _ = Group.objects.get_or_create(name='course_creator_group')
@@ -67,7 +88,7 @@ def sync_user_permissions(user):
     # First, clear existing CourseAccessRoles for this user managed by us
     # (Since we are overlaying, we might just clear and recreate them)
     # WARNING: To be safe, we only manage roles that match our known list
-    managed_roles = ["instructor", "staff", "beta_testers", "forum_admin"]
+    managed_roles = ["instructor", "staff", "beta_testers", "forum_admin", "community_ta", "data_researcher"]
     CourseAccessRole.objects.filter(user=user, role__in=managed_roles).delete()
 
     from opaque_keys.edx.keys import CourseKey
