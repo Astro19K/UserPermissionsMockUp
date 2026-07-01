@@ -24,7 +24,11 @@ def update_data():
         "Perform enrollment & staff tasks",
         "Moderate forums",
         "Full forum admin",
-        "Limited ability to moderate forums"
+        "Limited ability to moderate forums",
+        "Can generate reports",
+        "Can view published reports",
+        "Can view draft reports",
+        "Can manage facilities"
     ]
 
     perm_map = {}
@@ -37,7 +41,8 @@ def update_data():
         {"name": "Learner", "type": "Platform", "assigned": "auto assigned on register", "perms": ["Enroll/take courses"]},
         {"name": "Course Creator", "type": "Platform", "assigned": "Django admin", "perms": ["Enroll/take courses", "Create courses"]},
         {"name": "Global Staff", "type": "Platform", "assigned": "Django admin", "perms": ["Enroll/take courses", "Limited pre-publish access", "Limited ability to view content & progress", "Access Django admin / support"]},
-        {"name": "Superuser", "type": "Platform", "assigned": "Django admin", "perms": ["Enroll/take courses", "Create courses", "Full pre-publish access", "View content & progress", "Edit course content", "Manage grades & certificates", "Perform enrollment & staff tasks", "Moderate forums", "Full forum admin", "Access Django admin / support"]},
+        {"name": "Superuser", "type": "Platform", "assigned": "Django admin", "perms": ["Enroll/take courses", "Create courses", "Full pre-publish access", "View content & progress", "Edit course content", "Manage grades & certificates", "Perform enrollment & staff tasks", "Moderate forums", "Full forum admin", "Access Django admin / support", "Can generate reports", "Can view published reports", "Can view draft reports", "Can manage facilities"]},
+        {"name": "Report Manager", "type": "Platform", "assigned": "Django admin", "perms": ["Enroll/take courses", "Can generate reports", "Can view published reports", "Can view draft reports", "Can manage facilities"]},
         
         # Course Roles
         {"name": "Beta Tester", "type": "Course", "assigned": "Studio / LMS", "perms": ["Enroll/take courses", "Full pre-publish access"]},

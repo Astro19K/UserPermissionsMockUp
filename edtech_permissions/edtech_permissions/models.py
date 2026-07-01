@@ -32,3 +32,23 @@ class UserRoleAssignment(models.Model):
         if self.course_id:
             return f"{self.user.username} - {self.role.name} ({self.course_id})"
         return f"{self.user.username} - {self.role.name}"
+
+class Facility(models.Model):
+    name = models.CharField(max_length=255, unique=True, help_text="Name of the facility or branch")
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+class UserFacilityMapping(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name="facilities")
+    facility = models.ForeignKey(Facility, on_delete=models.CASCADE, related_name="users")
+
+    class Meta:
+        unique_together = ('user', 'facility')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.facility.name}"
+
+class AssessmentReport(models.Model):
+

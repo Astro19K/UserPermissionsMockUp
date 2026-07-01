@@ -4,7 +4,13 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import MockRole, MockPermission, UserRoleAssignment
+from .models import (
+    MockRole, 
+    MockPermission, 
+    UserRoleAssignment, 
+    Facility, 
+    UserFacilityMapping
+)
 
 @admin.register(MockPermission)
 class MockPermissionAdmin(admin.ModelAdmin):
@@ -53,3 +59,34 @@ class UserRoleAssignmentAdmin(admin.ModelAdmin):
     list_display = ('user', 'role', 'course_id')
     search_fields = ('user__username', 'role__name', 'course_id')
     list_filter = ('role',)
+
+@admin.register(Facility)
+class FacilityAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ('name',)
+
+@admin.register(UserFacilityMapping)
+class UserFacilityMappingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'facility')
+    search_fields = ('user__username', 'facility__name')
+    list_filter = ('facility',)
+
+
+# Unhide CourseEnrollment from Django Admin for testing
+try:
+    from common.djangoapps.student.models import CourseEnrollment
+    
+    # Try to unregister if it's already registered elsewhere
+    try:
+        admin.site.unregister(CourseEnrollment)
+    except admin.sites.NotRegistered:
+        pass
+
+    @admin.register(CourseEnrollment)
+    class CourseEnrollmentAdmin(admin.ModelAdmin):
+        list_display = ('id', 'user', 'course_id', 'mode', 'is_active', 'created')
+        search_fields = ('user__username', 'course_id')
+        list_filter = ('mode', 'is_active')
+        raw_id_fields = ('user',)
+except Exception:
+    pass

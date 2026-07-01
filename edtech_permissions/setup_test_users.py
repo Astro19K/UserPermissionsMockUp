@@ -21,3 +21,17 @@ if __name__ == "__main__":
     create_fake_user("fake_student_1", "student1@example.com")
     create_fake_user("fake_student_2", "student2@example.com")
     create_fake_user("fake_instructor", "instructor@example.com")
+
+    # Automatically enroll them so the course shows up on their LMS Dashboards!
+    from common.djangoapps.student.models import CourseEnrollment
+    from opaque_keys.edx.keys import CourseKey
+    
+    demo_course_key = CourseKey.from_string("course-v1:OpenedX+DemoX+DemoCourse")
+    for username in ["fake_student_1", "fake_student_2", "fake_instructor"]:
+        try:
+            u = User.objects.get(username=username)
+            CourseEnrollment.enroll(u, demo_course_key, mode="verified")
+            print(f"Auto-enrolled {username} into the Demo Course (Verified Track).")
+        except Exception as e:
+            print(f"Could not enroll {username}: {e}")
+
