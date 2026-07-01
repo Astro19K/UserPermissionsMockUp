@@ -82,6 +82,27 @@ tutor config save
 tutor dev restart cms lms
 ```
 
+### 7. Content Protection (Anti-Copying in the MFE)
+Because the modern Learner Portal uses a React Micro-Frontend (MFE), we cannot easily inject global scripts without rebuilding the entire React image. However, instructors can easily protect specific pages directly in Studio!
+
+1. Log into Studio (`http://studio.local.openedx.io:8001`) and open your course.
+2. Go to the Unit you want to protect.
+3. Under "Add New Component", click **HTML**, and then **Raw HTML**.
+4. Click Edit on the new block, delete the template text, and paste this exact code to disable text highlighting:
+```html
+<style>
+  * {
+    -webkit-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+  img {
+    pointer-events: none !important;
+  }
+</style>
+```
+5. Click **Save** and **Publish**. When a learner views this page in the MFE, they will be completely blocked from copy-pasting the text!
+
 ## 🌍 The Important Guide Links
 
 > [!NOTE]
